@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import BallotContract from '../build/contracts/Ballot.json'
 import getWeb3 from './utils/getWeb3'
+import Button from 'simple-react-button';
 
 import './css/oswald.css'
 import './css/open-sans.css'
@@ -10,7 +11,6 @@ import './App.css'
 class App extends Component {
   constructor(props) {
     super(props)
-
     this.state = {
       store: [],
       web3: null,
@@ -24,6 +24,39 @@ class App extends Component {
   handleChange(event) {
     this.setState({value: event.target.value});
   }
+
+  upvote(index){
+    var ballot = this.state.ballot
+    var ballotInstance
+
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      ballot.deployed().then((instance) => {
+        ballotInstance = instance
+        var result = instance.upVote(index, {from: accounts[0]})
+        return result
+      }).then((result) => {
+        console.log(result);
+        alert('Upvoted succesfully')
+      })
+    })
+  }
+
+  downvote(index){
+    var ballot = this.state.ballot
+    var ballotInstance
+
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      ballot.deployed().then((instance) => {
+        ballotInstance = instance
+        var result = instance.downVote(index, {from: accounts[0]})
+        return result
+      }).then((result) => {
+        console.log(result);
+        alert('DownVoted succesfully')
+      })
+    })
+  }
+
 
   handleSubmit(event) {
     event.preventDefault();
@@ -55,6 +88,7 @@ class App extends Component {
       })
       // Instantiate contract once web3 provided.
       this.instantiateContract()
+
     })
     .catch((e) => {
       console.log('Error finding web3.', e)
@@ -65,7 +99,6 @@ class App extends Component {
     const contract = require('truffle-contract')
     const ballot = contract(BallotContract)
     ballot.setProvider(this.state.web3.currentProvider)
-    console.log('ballot', ballot);
     this.setState({ballot: ballot})
   }
 
@@ -75,11 +108,15 @@ class App extends Component {
     for (var i = 0; i < hex.length; i += 2)
         str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
     return str;
-}
+  }
 
   render() {
-    const listItems = this.state.store.map((element) =>
-      <li>{this.hex2a(element)}</li>
+    const listItems = this.state.store.map((element, index) =>
+      <ol>
+          <Button value='Upvote' clickHandler={() => this.upvote(index)} />
+          <Button value='Downvote' clickHandler={() => this.downvote(index)} />
+           [{index}]: {this.hex2a(element)}
+      </ol>
     );
     return (
       <div className="App">
@@ -96,10 +133,10 @@ class App extends Component {
                   <input type="text" placeholder="Project 's name" value={this.state.value} onChange={this.handleChange} />
                 </label>
                 <input type="submit" value="Submit" />
-                <ul>
-                  {listItems}
-                </ul>
               </form>
+              <ul>
+                {listItems}
+              </ul>
             </div>
           </div>
         </main>
