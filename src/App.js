@@ -16,9 +16,10 @@ class App extends Component {
       web3: null,
       value: '',
       ballot: null,
+      storelength: 0
     }
     this.handleChange = this.handleChange.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.addProposal = this.addProposal.bind(this);
   }
 
   handleChange(event) {
@@ -57,6 +58,41 @@ class App extends Component {
     })
   }
 
+  fill_store() {
+    var ballot = this.state.ballot
+    var ballotInstance
+
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      ballot.deployed().then((instance) => {
+        ballotInstance = instance
+        var result = instance.getLength({from: accounts[0]})
+        return result
+      }).then((result) => {
+        length = result.c[0]
+        console.log('length', length);
+        this.setState({storelength: length})
+        return length
+      }).then((length)=> {
+        var promises = []
+        var array = []
+        for (var i = 0; i < length; i++){
+          var inst = ballotInstance.proposals(i)
+          console.log(inst);
+          promises.push(inst)
+        }
+        Promise.all(promises)
+        .then((values)=> {
+          console.log('VALUES', values);
+          var array = []
+          for (var i = 0;i < values.length; i++){
+            array.push(values[i][0])
+          }
+          this.setState({ store: array })
+        })
+      })
+    })
+  }
+
   winner() {
     var ballot = this.state.ballot
     var ballotInstance
@@ -75,7 +111,7 @@ class App extends Component {
     })
   }
 
-  handleSubmit(event) {
+  addProposal(event) {
     event.preventDefault();
     var ballot = this.state.ballot
     var ballotInstance
@@ -105,7 +141,7 @@ class App extends Component {
       })
       // Instantiate contract once web3 provided.
       this.instantiateContract()
-
+      this.fill_store()
     })
     .catch((e) => {
       console.log('Error finding web3.', e)
@@ -146,7 +182,7 @@ class App extends Component {
               <h1>Welcome to the voting project</h1>
               <h3>Who is the winner</h3>
               <Button value='Winner Name' clickHandler={() => this.winner()} />
-              <form onSubmit={this.handleSubmit}>
+              <form onSubmit={this.addProposal}>
                 <label>
                   <h2>Add a project</h2> <br/>
                   <input type="text" placeholder="Project 's name" value={this.state.value} onChange={this.handleChange} />
