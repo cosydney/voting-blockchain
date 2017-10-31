@@ -57,6 +57,20 @@ class App extends Component {
     })
   }
 
+  winner() {
+    var ballot = this.state.ballot
+    var ballotInstance
+
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      ballot.deployed().then((instance) => {
+        ballotInstance = instance
+        var result = instance.getWinnerName({from: accounts[0]})
+        return result
+      }).then((result) => {
+        alert('result[0]')
+      })
+    })
+  }
 
   handleSubmit(event) {
     event.preventDefault();
@@ -127,6 +141,8 @@ class App extends Component {
           <div className="pure-g">
             <div className="pure-u-1-1">
               <h1>Welcome to the voting project</h1>
+              <h3>Who is the winner</h3>
+              <Button value='Winner Name' clickHandler={() => this.winner()} />
               <form onSubmit={this.handleSubmit}>
                 <label>
                   <h2>Add a project</h2> <br/>
