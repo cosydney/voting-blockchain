@@ -67,7 +67,10 @@ class App extends Component {
         var result = instance.getWinnerName({from: accounts[0]})
         return result
       }).then((result) => {
-        alert('result[0]')
+        console.log(result);
+        var string = this.hex2a(result)
+        console.log(string.toString());
+        alert(result, string.toString())
       })
     })
   }
