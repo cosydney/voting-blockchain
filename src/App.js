@@ -62,8 +62,11 @@ class App extends Component {
     var ballotInstance
 
     this.state.web3.eth.getAccounts((error, accounts) => {
-      ballot.deployed().then((instance) => {
-        ballotInstance = instance
+      // ballot.deployed().then((instance) => {
+        // ballotInstance = instance
+        var instance = ballot
+        console.log(this.state);
+        console.log(instance);
         var result = instance.getLength({from: accounts[0]})
         return result
       }).then((result) => {
@@ -87,7 +90,7 @@ class App extends Component {
           this.setState({ store: array })
         })
       })
-    })
+    // })
   }
 
   winner() {
@@ -138,7 +141,6 @@ class App extends Component {
       })
       // Instantiate contract once web3 provided.
       this.instantiateContract()
-      this.fill_store()
     })
     .catch((e) => {
       console.log('Error finding web3.', e)
@@ -149,7 +151,13 @@ class App extends Component {
     const contract = require('truffle-contract')
     const ballot = contract(BallotContract)
     ballot.setProvider(this.state.web3.currentProvider)
-    this.setState({ballot: ballot})
+    ballot.at('0x4e107674db09d487afc192cfd9a6a6c32f95d5ae')
+    .then((ballotInstance) =>{
+      this.setState({ballot: ballotInstance})
+      console.log('ballotinstance', ballotInstance);
+      this.fill_store()
+    }
+    )
   }
 
   hex2a(hexx) {
