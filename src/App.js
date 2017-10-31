@@ -52,6 +52,7 @@ class App extends Component {
      * state management library, but for convenience I've placed them here.
      */
 
+     //keeps information about the contract in sync with migrations
     const contract = require('truffle-contract')
     const ballot = contract(BallotContract)
     ballot.setProvider(this.state.web3.currentProvider)
