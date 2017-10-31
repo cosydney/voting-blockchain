@@ -16,7 +16,6 @@ class App extends Component {
       web3: null,
       value: '',
       ballot: null,
-      storelength: 0
     }
     this.handleChange = this.handleChange.bind(this);
     this.addProposal = this.addProposal.bind(this);
@@ -69,8 +68,6 @@ class App extends Component {
         return result
       }).then((result) => {
         length = result.c[0]
-        console.log('length', length);
-        this.setState({storelength: length})
         return length
       }).then((length)=> {
         var promises = []
