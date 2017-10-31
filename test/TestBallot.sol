@@ -23,4 +23,12 @@ contract TestBallot {
     Assert.equal(positiveVoteCount, expected, "positiveVoteCount should equal 1");
   }
 
+  // Testing the UpVote() function
+  function testWinningContract() {
+    ballot.addProposal("Second, loosing proposal");
+    ballot.downVote(0);
+    var (name, expected, neg) = (ballot.proposals(0));
+    Assert.equal(positiveVoteCount, expected, "positiveVoteCount should equal 1");
+  }
+
 }
