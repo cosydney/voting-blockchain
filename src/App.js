@@ -12,9 +12,10 @@ class App extends Component {
     super(props)
 
     this.state = {
-      storageValue: 0,
+      store: [],
       web3: null,
-      value: ''
+      value: '',
+      ballot: null,
     }
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,9 +26,25 @@ class App extends Component {
   }
 
   handleSubmit(event) {
-    alert('A name was submitted: ' + this.state.value);
-    // TODO call Ballot.AddProposal(this.state.value)
     event.preventDefault();
+    var ballot = this.state.ballot
+    var ballotInstance
+
+    this.state.web3.eth.getAccounts((error, accounts) => {
+      ballot.deployed().then((instance) => {
+        ballotInstance = instance
+        var result = instance.addProposal(this.state.value, {from: accounts[0]})
+        return result
+      }).then((result) => {
+        var length = this.state.store.length
+        return ballotInstance.proposals(length)
+      }).then((result) => {
+        var array = this.state.store
+        array.push(result[0])
+        this.setState({ store: array })
+        console.log('MF', this.state);
+      })
+    })
   }
 
   componentWillMount() {
@@ -39,46 +56,20 @@ class App extends Component {
       // Instantiate contract once web3 provided.
       this.instantiateContract()
     })
-    .catch(() => {
-      console.log('Error finding web3.')
+    .catch((e) => {
+      console.log('Error finding web3.', e)
     })
   }
 
   instantiateContract() {
-    /*
-     * SMART CONTRACT EXAMPLE
-     *
-     * Normally these functions would be called in the context of a
-     * state management library, but for convenience I've placed them here.
-     */
-
-     //keeps information about the contract in sync with migrations
     const contract = require('truffle-contract')
     const ballot = contract(BallotContract)
     ballot.setProvider(this.state.web3.currentProvider)
-
-    // Declaring this for later so we can chain functions on SimpleStorage.
-    var ballotInstance
-
-    // Get accounts.
-    // this.state.web3.eth.getAccounts((error, accounts) => {
-    //   simpleStorage.deployed().then((instance) => {
-    //     simpleStorageInstance = instance
-    //
-    //     // Stores a given value, 5 by default.
-    //     return simpleStorageInstance.set(5, {from: accounts[0]})
-    //   }).then((result) => {
-    //     // Get the value from the contract to prove it worked.
-    //     return simpleStorageInstance.get.call(accounts[0])
-    //   }).then((result) => {
-    //     // Update state with the result.
-    //     return this.setState({ storageValue: result.c[0] })
-    //   })
-    // })
+    console.log('ballot', ballot);
+    this.setState({ballot: ballot})
   }
 
   render() {
-    console.log('this.state', this.state);
     return (
       <div className="App">
         <nav className="navbar pure-menu pure-menu-horizontal">
@@ -95,6 +86,7 @@ class App extends Component {
                   <input type="text" placeholder="Project 's name" value={this.state.value} onChange={this.handleChange} />
                 </label>
                 <input type="submit" value="Submit" />
+
               </form>
             </div>
           </div>

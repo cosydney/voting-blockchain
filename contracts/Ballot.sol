@@ -25,9 +25,9 @@ contract Ballot {
     }));
   }
 
-  function getProposals() public returns (Proposal[]) {
+  /*function getProposals() public returns (Proposal[]) {
     return proposals;
-  }
+  }*/
 
   function getLength() public constant returns(uint count) {
       return proposals.length;
