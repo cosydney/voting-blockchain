@@ -3,14 +3,14 @@ pragma solidity ^0.4.7;
 contract Ballot {
 
   struct Voter {
-    uint weight;
+    int weight;
     mapping(uint => bool) votedProposal;
   }
 
   struct Proposal {
     bytes32 name;
-    uint positiveVoteCount;
-    uint negativeVoteCount;
+    int positiveVoteCount;
+    int negativeVoteCount;
   }
 
   mapping(address => Voter) public voters;
@@ -18,11 +18,15 @@ contract Ballot {
 
   function addProposal(bytes32 proposalName) public {
     proposals.push(
-        Proposal({
-        name: proposalName,
-        positiveVoteCount: 0,
-        negativeVoteCount: 0
-        }));
+    Proposal({
+      name: proposalName,
+      positiveVoteCount: 0,
+      negativeVoteCount: 0
+    }));
+  }
+
+  function getLength() public constant returns(uint count) {
+      return proposals.length;
   }
 
   modifier hasVoted(uint proposal) {
@@ -45,8 +49,9 @@ contract Ballot {
 
   function winningProposal() constant public
         returns (uint winningProposalIdx) {
-      uint winningVoteCount = 0;
-      for( uint p = 0; p < proposals.length; p++) {
+      int winningVoteCount = 0;
+      for( uint p =
+         0; p < proposals.length; p++) {
         if ((proposals[p].positiveVoteCount - proposals[p].negativeVoteCount) > winningVoteCount) {
           winningVoteCount = proposals[p].positiveVoteCount - proposals[p].negativeVoteCount;
           winningProposalIdx = p;
