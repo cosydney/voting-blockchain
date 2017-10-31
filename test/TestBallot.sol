@@ -7,12 +7,6 @@ import "../contracts/Ballot.sol";
 contract TestBallot {
   Ballot ballot = Ballot(DeployedAddresses.Ballot());
 
-
-    struct Voter {
-      uint weight;
-      mapping(uint => bool) votedProposal;
-    }
-
   // Testing the hasVoted() function
   function testaddProposal() {
     bytes32 proposalName = "My Fisrt Proposal";
@@ -21,11 +15,12 @@ contract TestBallot {
     Assert.equal(proposalName, expected, "ProposalName should match");
   }
 
-    // Testing the hasVoted() function
+  // Testing the UpVote() function
   function testUserUpVote() {
     uint positiveVoteCount = 1;
     ballot.upVote(0);
     var (name, expected, neg) = (ballot.proposals(0));
     Assert.equal(positiveVoteCount, expected, "positiveVoteCount should equal 1");
   }
+
 }
