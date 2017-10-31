@@ -69,13 +69,23 @@ class App extends Component {
     this.setState({ballot: ballot})
   }
 
+  hex2a(hexx) {
+    var hex = hexx.toString();//force conversion
+    var str = '';
+    for (var i = 0; i < hex.length; i += 2)
+        str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+    return str;
+}
+
   render() {
+    const listItems = this.state.store.map((element) =>
+      <li>{this.hex2a(element)}</li>
+    );
     return (
       <div className="App">
         <nav className="navbar pure-menu pure-menu-horizontal">
             <a href="#" className="pure-menu-heading pure-menu-link">The voting project</a>
         </nav>
-
         <main className="container">
           <div className="pure-g">
             <div className="pure-u-1-1">
@@ -86,7 +96,9 @@ class App extends Component {
                   <input type="text" placeholder="Project 's name" value={this.state.value} onChange={this.handleChange} />
                 </label>
                 <input type="submit" value="Submit" />
-
+                <ul>
+                  {listItems}
+                </ul>
               </form>
             </div>
           </div>
